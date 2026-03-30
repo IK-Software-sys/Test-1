@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <title>NEURAL_INTERFACE_V5</title>
+    <title>DIGITAL ID</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
 
@@ -24,7 +24,6 @@
             overflow: hidden; 
         }
 
-        
         .crt-overlay {
             position: fixed; inset: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), 
@@ -42,15 +41,31 @@
 
         .hazard-triangle {
             width: 0; height: 0;
-            border-left: 30px solid transparent; border-right: 30px solid transparent;
-            border-bottom: 50px solid var(--neon-red);
-            position: relative; filter: drop-shadow(0 0 15px var(--neon-red));
-            margin-bottom: 15px;
+            border-left: 18px solid transparent; border-right: 18px solid transparent;
+            border-bottom: 32px solid var(--neon-red);
+            position: relative; 
+            filter: drop-shadow(0 0 10px var(--neon-red));
+            animation: strobe 1.5s ease-in-out infinite;
+            display: flex;
+            justify-content: center;
         }
 
         .hazard-triangle::after {
-            content: "!"; position: absolute; left: -4px; top: 20px;
-            font-family: 'Orbitron'; font-weight: bold; color: white; font-size: 20px;
+            content: "!"; 
+            position: absolute; 
+            left: 50%;
+            transform: translateX(-50%);
+            top: 12px;
+            font-family: 'Orbitron'; 
+            font-weight: bold; 
+            color: white; 
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        @keyframes strobe {
+            0%, 100% { opacity: 1; filter: drop-shadow(0 0 12px var(--neon-red)); }
+            50% { opacity: 0.6; filter: drop-shadow(0 0 4px var(--neon-red)); }
         }
 
         .hex-btn { clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%); }
@@ -58,14 +73,65 @@
         .octo-badge { clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%); }
 
         .hidden-menu { opacity: 0 !important; pointer-events: none; transform: scale(1.1); filter: blur(20px); }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        
-        
+
         #scroll-container {
             height: 100dvh; 
             overflow-y: auto;
             overflow-x: hidden;
             scroll-behavior: smooth;
+        }
+
+        .audio-visualizer {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 12px;
+        }
+
+        .bar {
+            width: 3px;
+            background: var(--neon-cyan);
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .bar:nth-child(2) { animation-delay: 0.2s; }
+        .bar:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 100% { height: 4px; }
+            50% { height: 12px; }
+        }
+
+        .music-player-ui {
+            background: rgba(0, 242, 255, 0.05);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .music-player-ui:hover {
+            background: rgba(0, 242, 255, 0.1);
+            border-color: rgba(0, 242, 255, 0.5);
+        }
+
+        .share-feedback {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--neon-cyan);
+            color: black;
+            padding: 8px 20px;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+            z-index: 1000;
+            display: none;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
         }
 
         @media (max-width: 640px) {
@@ -78,30 +144,29 @@
 
     <div class="crt-overlay"></div>
     <div class="light-bleed"></div>
-
-    <div id="construction-overlay" class="fixed inset-0 z-[1000] bg-[#020205]/98 flex items-center justify-center backdrop-blur-xl transition-all duration-500">
-        <div class="max-w-[90%] w-full p-6 border-2 border-red-600/50 text-center bg-red-950/10 shadow-[0_0_40px_rgba(255,0,60,0.2)]">
-            <div class="flex justify-center"><div class="hazard-triangle"></div></div>
-            <h2 class="text-red-500 font-bold text-3xl mb-4 tracking-tighter" style="font-family: 'Orbitron';">WARNING</h2>
-            <p class="text-white font-mono text-[10px] mb-6 uppercase tracking-widest leading-relaxed opacity-80">
-                Neural link under <span class="text-red-500 font-bold">heavy construction</span>. 
-                Report glitches immediately.
-            </p>
-            <button onclick="dismissWarning()" class="w-full bg-red-600 text-white px-6 py-3 font-black uppercase text-xs tracking-widest hover:bg-white hover:text-red-600 transition-all">
-                Acknowledge
-            </button>
-        </div>
-    </div>
+    <div id="share-toast" class="share-feedback">Link Encrypted & Copied</div>
 
     <div id="home-menu" class="fixed inset-0 z-[500] bg-black/95 backdrop-blur-3xl flex flex-col items-center justify-center p-6 text-center transition-all duration-700">
-        <div class="mb-8 relative">
-            <div class="w-20 h-20 octo-badge bg-cyan-500/10 border border-cyan-500 flex items-center justify-center mx-auto mb-4">
-                <i class="fa-solid fa-microchip text-3xl"></i>
+        <div class="mb-8 relative border-2 border-red-600/30 bg-red-950/10 p-10 shadow-[0_0_40px_rgba(255,0,60,0.1)]">
+            <div class="w-16 h-16 octo-badge bg-cyan-500/10 border border-cyan-500 flex items-center justify-center mx-auto mb-6">
+                <i class="fa-solid fa-microchip text-2xl text-cyan-400"></i>
             </div>
-            <h1 class="text-4xl lg:text-7xl font-bold tracking-[0.2em] text-white italic" style="font-family: 'Orbitron';">WELCOME</h1>
-            <p class="text-cyan-500 text-[8px] tracking-[0.4em] mt-2 uppercase opacity-60 font-mono">Access has been granted</p>
+            
+            <h1 class="text-4xl lg:text-7xl font-bold tracking-[0.2em] text-white italic mb-2" style="font-family: 'Orbitron';">WELCOME</h1>
+            <p class="text-cyan-500 text-[8px] tracking-[0.4em] uppercase opacity-60 font-mono mb-8">Access granted // Signal stabilized</p>
+            
+            <div class="flex items-center justify-center gap-4 bg-red-950/30 border border-red-600/40 p-3 max-w-sm mx-auto">
+                <div class="hazard-triangle"></div>
+                <div class="text-left">
+                    <h3 class="text-red-500 font-bold text-sm tracking-tight" style="font-family: 'Orbitron';">WARNING</h3>
+                    <p class="text-white/70 font-mono text-[9px] uppercase tracking-wider leading-relaxed">
+                        Digital ID <span class="text-red-500 font-bold">under construction</span>. Report Any Bugs.
+                    </p>
+                </div>
+            </div>
         </div>
-        <button onclick="closeMenu()" class="menu-tab bg-cyan-500 text-black px-12 py-4 font-black uppercase text-xs tracking-widest hover:bg-white shadow-[0_0_20px_rgba(0,242,255,0.4)]">
+
+        <button onclick="closeMenu()" class="menu-tab bg-cyan-500 text-black px-12 py-4 font-black uppercase text-xs tracking-widest hover:bg-white shadow-[0_0_20px_rgba(0,242,255,0.4)] transition-all">
            Initialize
         </button>
     </div>
@@ -115,35 +180,30 @@
             <button onclick="openMenu()" class="octo-badge bg-cyan-950/40 w-10 h-10 flex items-center justify-center border border-cyan-500/30">
                 <i class="fa-solid fa-bars-staggered text-sm"></i>
             </button>
-            <div class="flex flex-col items-center">
-                <span class="text-[7px] tracking-[2px] text-cyan-500 opacity-50 uppercase font-mono mb-1">Signal_Link</span>
-                <div class="flex gap-1 items-center">
-                    <div class="w-1 h-2 bg-cyan-500"></div><div class="w-1 h-2 bg-cyan-500"></div><div class="w-1 h-2 bg-cyan-500/20"></div>
-                    <button onclick="toggleMute()" class="ml-2 text-cyan-500">
-                        <i id="mute-icon" class="fa-solid fa-volume-high text-[8px]"></i>
-                    </button>
+            
+            <div class="music-player-ui group cursor-pointer" onclick="toggleMute()">
+                <div class="flex flex-col items-end">
+                    <span class="text-[8px] font-bold text-cyan-400/60 uppercase tracking-widest leading-none">Audio Engine</span>
+                    <span id="audio-status-text" class="text-[10px] text-white font-mono uppercase tracking-tighter">System Live</span>
                 </div>
+                <div class="audio-visualizer">
+                    <div id="bar1" class="bar"></div>
+                    <div id="bar2" class="bar"></div>
+                    <div id="bar3" class="bar"></div>
+                </div>
+                <i id="mute-icon" class="fa-solid fa-volume-high text-xs text-cyan-500 ml-1"></i>
             </div>
-            <button class="octo-badge bg-cyan-950/40 w-10 h-10 flex items-center justify-center border border-cyan-500/30">
+
+            <button onclick="shareProfile()" class="octo-badge bg-cyan-950/40 w-10 h-10 flex items-center justify-center border border-cyan-500/30 active:scale-90 transition-transform">
                 <i class="fa-solid fa-share-nodes text-sm"></i>
             </button>
         </header>
 
         <main class="lg:grid lg:grid-cols-2 lg:max-w-7xl lg:mx-auto w-full">
             <div class="relative w-full aspect-square lg:h-[600px] bg-black border-r border-cyan-900/20 group overflow-hidden">
-                <div id="slider" class="flex overflow-x-auto snap-x snap-mandatory no-scrollbar h-full">
-                    <div class="min-w-full h-full snap-center">
-                        <img src="https://i.postimg.cc/jq48Cnq4/IMG-20260328-214557.jpg" class="w-full h-full object-cover grayscale-[30%]">
-                    </div>
-                    <div class="min-w-full h-full snap-center">
-                        <img src="https://i.postimg.cc/y8QtxgPf/RDT-20260329-1808341154363770606799191.webp" class="w-full h-full object-cover grayscale-[30%]">
-                    </div>
-                </div>
-                <div class="absolute bottom-0 left-0 w-full h-[3px] bg-cyan-950/50">
-                    <div id="progress-bar" class="h-full bg-cyan-500 shadow-[0_0_10px_#00f2ff] transition-all duration-300" style="width: 50%;"></div>
-                </div>
+                <img src="https://i.postimg.cc/MH7y6TBD/IMG-20260330-223040.png" class="w-full h-full object-cover grayscale-[30%]">
                 <div class="absolute top-4 left-4 bg-black/80 px-3 py-1 font-mono text-[9px] border border-cyan-500/30">
-                    FEED_0<span id="counter">1/2</span>
+                    Photo ID
                 </div>
             </div>
 
@@ -163,7 +223,7 @@
                         <span class="text-white font-bold">+212 647 455 657</span>
                     </div>
                 </div>
-                
+
                 <div class="h-32 lg:h-0"></div> 
             </div>
         </main>
@@ -175,7 +235,7 @@
                 </div>
                 <p class="text-xs font-bold text-white tracking-widest hidden sm:block uppercase">IyadKh</p>
             </div>
-            
+
             <div class="flex gap-2">
                 <a href="https://wa.me/212647455657" class="hex-btn bg-black border border-cyan-900 w-10 h-10 flex items-center justify-center text-cyan-400">
                     <i class="fa-brands fa-whatsapp text-lg"></i>
@@ -188,28 +248,32 @@
     </div>
 
     <script>
-        const slider = document.getElementById('slider');
-        const counter = document.getElementById('counter');
-        const progressBar = document.getElementById('progress-bar');
         const homeMenu = document.getElementById('home-menu');
         const bgMusic = document.getElementById('bg-music');
         const muteIcon = document.getElementById('mute-icon');
+        const audioStatus = document.getElementById('audio-status-text');
+        const bars = document.querySelectorAll('.bar');
+        const toast = document.getElementById('share-toast');
 
-        slider.addEventListener('scroll', () => {
-            const index = Math.round(slider.scrollLeft / slider.clientWidth) + 1;
-            counter.innerText = `${index}/2`;
-            const scrollPercent = (index / 2) * 100;
-            progressBar.style.width = `${scrollPercent}%`;
-        });
-
-        function dismissWarning() {
-            document.getElementById('construction-overlay').classList.add('hidden-menu');
-        }
+        let audioInitialized = false;
 
         function closeMenu() {
             homeMenu.classList.add('hidden-menu');
-            bgMusic.volume = 0.3;
-            bgMusic.play().catch(e => {});
+            if (!audioInitialized) {
+                bgMusic.volume = 0;
+                bgMusic.play().then(() => {
+                    let vol = 0;
+                    const fadeIn = setInterval(() => {
+                        if (vol < 0.3) {
+                            vol += 0.05;
+                            bgMusic.volume = vol;
+                        } else {
+                            clearInterval(fadeIn);
+                        }
+                    }, 100);
+                }).catch(e => {});
+                audioInitialized = true;
+            }
         }
 
         function openMenu() {
@@ -220,7 +284,42 @@
             bgMusic.muted = !bgMusic.muted;
             muteIcon.classList.toggle('fa-volume-high', !bgMusic.muted);
             muteIcon.classList.toggle('fa-volume-xmark', bgMusic.muted);
+            audioStatus.textContent = bgMusic.muted ? "System Muted" : "System Live";
+            bars.forEach(bar => {
+                bar.style.animationPlayState = bgMusic.muted ? 'paused' : 'running';
+                bar.style.opacity = bgMusic.muted ? '0.2' : '1';
+            });
         }
+
+        async function shareProfile() {
+            const shareData = {
+                title: 'IYADKH DIGITAL ID',
+                text: 'Accessing encrypted digital identification profile.',
+                url: window.location.href
+            };
+
+            try {
+                if (navigator.share) {
+                    await navigator.share(shareData);
+                } else {
+                    await navigator.clipboard.writeText(window.location.href);
+                    showToast();
+                }
+            } catch (err) {
+                console.log('Share failed', err);
+            }
+        }
+
+        function showToast() {
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 2000);
+        }
+
+        document.body.addEventListener('touchstart', function() {
+            if(bgMusic.paused && audioInitialized && !bgMusic.muted) {
+                bgMusic.play();
+            }
+        }, {passive: true});
     </script>
 </body>
 </html>
